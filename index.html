@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Web-based Material Requirements Planning (MRP) system for manufacturing — plan production, purchase materials, and manage inventory." />
+  <title>MRP System — Material Requirements Planning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-text">MRP<span class="brand-accent">System</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-tab="dashboard" id="nav-dashboard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-btn" data-tab="master-data" id="nav-master-data">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Master Data</span>
+      </button>
+      <button class="nav-btn" data-tab="demand" id="nav-demand">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>Demand Planning</span>
+      </button>
+      <button class="nav-btn" data-tab="mrp-output" id="nav-mrp-output">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span>MRP Output</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-btn" id="btn-load-sample" title="Load sample data">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Load Sample Data</span>
+      </button>
+      <button class="nav-btn danger" id="btn-clear-all" title="Clear all data">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span>Clear All Data</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content" id="main-content">
+
+    <!-- ==================== DASHBOARD TAB ==================== -->
+    <section class="tab-panel active" id="tab-dashboard">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p class="page-subtitle">Overview of your manufacturing planning status</p>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          <div class="kpi-info">
+            <span class="kpi-value" id="kpi-products">0</span>
+            <span class="kpi-label">Products</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="kpi-info">
+            <span class="kpi-value" id="kpi-bom">0</span>
+            <span class="kpi-label">BOM Entries</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon teal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <div class="kpi-info">
+            <span class="kpi-value" id="kpi-inventory">0</span>
+            <span class="kpi-label">Inventory Items</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="kpi-info">
+            <span class="kpi-value" id="kpi-demands">0</span>
+            <span class="kpi-label">Active Demands</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Banner -->
+      <div class="alerts-container" id="alerts-container" style="display:none;">
+        <div class="alert-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Material Shortage Alerts</span>
+        </div>
+        <ul class="alert-list" id="alert-list"></ul>
+      </div>
+
+      <!-- Dashboard Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Inventory Status</h3>
+          <div class="chart-wrapper"><canvas id="chart-inventory"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Material Requirements vs Stock</h3>
+          <div class="chart-wrapper"><canvas id="chart-requirements"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Quick Summary Table -->
+      <div class="card">
+        <h3>Recent Planned Orders</h3>
+        <div class="table-wrapper">
+          <table id="tbl-dashboard-orders">
+            <thead>
+              <tr><th>Type</th><th>Item</th><th>Qty</th><th>Order Date</th><th>Status</th></tr>
+            </thead>
+            <tbody><tr><td colspan="5" class="empty-msg">Run MRP to generate planned orders</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MASTER DATA TAB ==================== -->
+    <section class="tab-panel" id="tab-master-data">
+      <div class="page-header">
+        <h1>Master Data</h1>
+        <p class="page-subtitle">Manage products, bill of materials, and inventory</p>
+      </div>
+
+      <!-- Sub-tabs for Master Data -->
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-subtab="products" id="subtab-products">Products</button>
+        <button class="sub-tab" data-subtab="bom" id="subtab-bom">Bill of Materials</button>
+        <button class="sub-tab" data-subtab="inventory" id="subtab-inventory">Inventory</button>
+      </div>
+
+      <!-- Products Sub-panel -->
+      <div class="sub-panel active" id="sub-products">
+        <div class="form-and-table">
+          <div class="card form-card">
+            <h3>Add Product</h3>
+            <form id="form-product">
+              <div class="form-group">
+                <label for="inp-product-id">Product ID</label>
+                <input type="text" id="inp-product-id" placeholder="e.g. PROD-001" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-product-name">Product Name</label>
+                <input type="text" id="inp-product-name" placeholder="e.g. Aluminium Frame Assembly" required />
+              </div>
+              <button type="submit" class="btn btn-primary" id="btn-add-product">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Product
+              </button>
+            </form>
+          </div>
+          <div class="card table-card">
+            <h3>Products List</h3>
+            <div class="table-wrapper">
+              <table id="tbl-products">
+                <thead><tr><th>Product ID</th><th>Name</th><th>Actions</th></tr></thead>
+                <tbody><tr><td colspan="3" class="empty-msg">No products added yet</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOM Sub-panel -->
+      <div class="sub-panel" id="sub-bom">
+        <div class="form-and-table">
+          <div class="card form-card">
+            <h3>Add BOM Entry</h3>
+            <form id="form-bom">
+              <div class="form-group">
+                <label for="sel-bom-product">Product</label>
+                <select id="sel-bom-product" required><option value="">Select product…</option></select>
+              </div>
+              <div class="form-group">
+                <label for="inp-bom-component">Component / Material ID</label>
+                <input type="text" id="inp-bom-component" placeholder="e.g. RM-STEEL-01" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-bom-component-name">Component Name</label>
+                <input type="text" id="inp-bom-component-name" placeholder="e.g. Steel Sheet" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-bom-qty">Quantity Per Unit</label>
+                <input type="number" id="inp-bom-qty" min="0.01" step="0.01" placeholder="e.g. 2" required />
+              </div>
+              <button type="submit" class="btn btn-primary" id="btn-add-bom">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add BOM Entry
+              </button>
+            </form>
+          </div>
+          <div class="card table-card">
+            <h3>Bill of Materials</h3>
+            <div class="table-wrapper">
+              <table id="tbl-bom">
+                <thead><tr><th>Product</th><th>Component ID</th><th>Component Name</th><th>Qty/Unit</th><th>Actions</th></tr></thead>
+                <tbody><tr><td colspan="5" class="empty-msg">No BOM entries yet</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Sub-panel -->
+      <div class="sub-panel" id="sub-inventory">
+        <div class="form-and-table">
+          <div class="card form-card">
+            <h3>Add / Update Inventory</h3>
+            <form id="form-inventory">
+              <div class="form-group">
+                <label for="inp-inv-id">Item ID</label>
+                <input type="text" id="inp-inv-id" placeholder="e.g. RM-STEEL-01" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-inv-name">Item Name</label>
+                <input type="text" id="inp-inv-name" placeholder="e.g. Steel Sheet" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-inv-stock">Current Stock</label>
+                <input type="number" id="inp-inv-stock" min="0" step="1" placeholder="e.g. 150" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-inv-lead">Lead Time (days)</label>
+                <input type="number" id="inp-inv-lead" min="0" step="1" placeholder="e.g. 7" required />
+              </div>
+              <div class="form-group">
+                <label for="inp-inv-moq">Min Order Qty (MOQ)</label>
+                <input type="number" id="inp-inv-moq" min="1" step="1" placeholder="e.g. 25" value="1" />
+              </div>
+              <div class="form-group">
+                <label for="inp-inv-safety">Safety Stock</label>
+                <input type="number" id="inp-inv-safety" min="0" step="1" placeholder="e.g. 20" value="0" />
+              </div>
+              <button type="submit" class="btn btn-primary" id="btn-add-inventory">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add / Update Item
+              </button>
+            </form>
+          </div>
+          <div class="card table-card">
+            <h3>Inventory List</h3>
+            <div class="table-wrapper">
+              <table id="tbl-inventory">
+                <thead><tr><th>Item ID</th><th>Name</th><th>Stock</th><th>Lead Time</th><th>MOQ</th><th>Safety Stock</th><th>Actions</th></tr></thead>
+                <tbody><tr><td colspan="7" class="empty-msg">No inventory items yet</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== DEMAND PLANNING TAB ==================== -->
+    <section class="tab-panel" id="tab-demand">
+      <div class="page-header">
+        <h1>Demand Planning</h1>
+        <p class="page-subtitle">Master Production Schedule — define what to produce and when</p>
+      </div>
+
+      <div class="form-and-table">
+        <div class="card form-card">
+          <h3>Add Demand Entry</h3>
+          <form id="form-demand">
+            <div class="form-group">
+              <label for="sel-demand-product">Product</label>
+              <select id="sel-demand-product" required><option value="">Select product…</option></select>
+            </div>
+            <div class="form-group">
+              <label for="inp-demand-qty">Quantity</label>
+              <input type="number" id="inp-demand-qty" min="1" step="1" placeholder="e.g. 100" required />
+            </div>
+            <div class="form-group">
+              <label for="inp-demand-date">Required Date</label>
+              <input type="date" id="inp-demand-date" required />
+            </div>
+            <button type="submit" class="btn btn-primary" id="btn-add-demand">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Demand
+            </button>
+          </form>
+        </div>
+        <div class="card table-card">
+          <h3>Production Demands (MPS)</h3>
+          <div class="table-wrapper">
+            <table id="tbl-demand">
+              <thead><tr><th>Product</th><th>Quantity</th><th>Required Date</th><th>Actions</th></tr></thead>
+              <tbody><tr><td colspan="4" class="empty-msg">No demand entries yet</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MRP OUTPUT TAB ==================== -->
+    <section class="tab-panel" id="tab-mrp-output">
+      <div class="page-header">
+        <h1>MRP Output</h1>
+        <p class="page-subtitle">Material requirements and planned production &amp; purchase orders</p>
+      </div>
+
+      <!-- Sticky action bar — always visible even when zoomed/scrolled -->
+      <div class="sticky-action-bar" id="mrp-action-bar">
+        <button class="btn btn-primary btn-run-mrp" id="btn-run-mrp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Run MRP Engine
+        </button>
+        <button class="btn btn-outline" id="btn-csv-materials" title="Download Material Requirements CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Materials CSV
+        </button>
+        <button class="btn btn-outline" id="btn-csv-orders" title="Download Planned Orders CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Orders CSV
+        </button>
+      </div>
+
+      <!-- Capacity Settings -->
+      <div class="capacity-panel" id="capacity-panel">
+        <label>Capacity Constraint</label>
+        <div class="capacity-input-group">
+          <input type="number" id="inp-capacity" min="1" step="1" value="100" />
+          <span>units / day</span>
+        </div>
+        <div class="capacity-summary" id="capacity-summary"></div>
+      </div>
+
+      <!-- MRP Results -->
+      <div id="mrp-results" style="display:none;">
+        <!-- Material Requirements -->
+        <div class="card">
+          <h3>Material Requirements</h3>
+          <div class="table-wrapper">
+            <table id="tbl-mrp-materials">
+              <thead>
+                <tr><th>Lvl</th><th>Item ID</th><th>Item Name</th><th>Gross Req</th><th>Safety Stock</th><th>Available</th><th>Net Req</th><th>MOQ</th><th>Order Qty</th><th>Status</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Planned Orders -->
+        <div class="card">
+          <h3>Planned Orders</h3>
+          <div class="table-wrapper">
+            <table id="tbl-mrp-orders">
+              <thead>
+                <tr><th>Order Type</th><th>Item</th><th>Item Name</th><th>Net Req</th><th>Order Qty (Lot)</th><th>Required Date</th><th>Order Date</th><th>Lead Time</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Gantt Chart -->
+        <div class="gantt-section" id="gantt-section">
+          <h3>Production Schedule — Gantt Chart</h3>
+          <div id="gantt-container"></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Net Requirements Breakdown</h3>
+            <div class="chart-wrapper"><canvas id="chart-net-req"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Order Timeline</h3>
+            <div class="chart-wrapper"><canvas id="chart-orders"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mrp-empty" class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <h3>MRP Engine Not Run</h3>
+        <p>Add products, BOM, inventory, and demand data, then click <strong>"Run MRP Engine"</strong> to generate material plans.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast notification container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
